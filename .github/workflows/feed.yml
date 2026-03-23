@@ -2,13 +2,15 @@ name: Get Feed
 
 on:
   schedule:
-    - cron: '0 * * * *'        # 每小时的第0分钟运行
-  workflow_dispatch:
+    - cron: '0 * * * *'        # 每小时的第0分钟运行（RSS抓取）
+    - cron: '0 8 * * 1'        # 每周一早上8点运行（发送供应商名录）
+  workflow_dispatch:           # 允许手动触发
 
 jobs:
-  build:
+  # ===== 原有任务：每小时抓取 RSS 并推送 =====
+  rss-feed:
     runs-on: ubuntu-latest
-
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 * * * *'
     steps:
       - uses: actions/checkout@v3
 
@@ -26,3 +28,24 @@ jobs:
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
           RUN_FREQUENCY: 3600
         run: python main.py
+
+  # ===== 新增任务：每周一早上8点发送供应商名录 =====
+  send-suppliers:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 8 * * 1'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install requests python-dotenv
+
+      - name: Send suppliers list
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+        run: python send_suppliers.py
