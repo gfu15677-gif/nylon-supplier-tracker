@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 * * * *'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4          # 从 v3 升级到 v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5      # 从 v4 升级到 v5
         with:
           python-version: '3.12'
 
@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch' || github.event.schedule == '0 8 * * 1'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4          # 从 v3 升级到 v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5      # 从 v4 升级到 v5
         with:
           python-version: '3.12'
 
